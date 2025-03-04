@@ -1,131 +1,45 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import Window from './src/app/home/Window';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { PersistGate } from 'redux-persist/integration/react'
+import { Provider } from 'react-redux'
+import { store, persistor } from './src/store/index'
+import SelfScreen from "./src/layouts/SelfScreen";
+import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
+import Qualified from "./src/app/home/Qualified";
+import unQualified from "./src/app/home/Unqualified";
+import resetQualified from "./src/app/home/ResetQualified";
+import Replenish from "./src/app/second/Replenish";
+import Remove from "./src/app/second/Remove";
+import SetConfig from "./src/app/three/SetConfig";
+import About from "./src/app/three/About";
+import Help from "./src/app/three/Help";
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+//初始化基础路由
+const Stack = createStackNavigator(); //基础路由
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+export default function App(): React.JSX.Element {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <Provider store={store}>
+      <PersistGate loading={<Window />} persistor={persistor}>
+      <NavigationContainer>
+        <Stack.Navigator mode="modal">
+          <Stack.Screen name="Home" options={{ title: '主体', headerShown: false }} component={BottomTabNavigator} />
+          <Stack.Screen name="SelfScreen" options={{ title: '用户列表' }} component={SelfScreen} />
+          <Stack.Screen name="AllBill" options={{ title: '所有订单' }} component={SelfScreen} />
+          <Stack.Screen name="Replenish" options={{ title: '补充空货架' }} component={Replenish} />
+          <Stack.Screen name="Remove" options={{ title: '移出空货架' }} component={Remove} />
+          <Stack.Screen name="Qualified" options={{ title: '合格产品登记' }} component={Qualified} />
+          <Stack.Screen name="ResetQualified" options={{ title: '重登记合格' }} component={resetQualified} />
+          <Stack.Screen name="Unqualified" options={{ title: '不合格产品登记' }} component={unQualified} />
+          <Stack.Screen name="SetConfig" options={{ title: '设置' }} component={SetConfig} />
+          <Stack.Screen name="About" options={{ title: '关于' }} component={About} />
+          <Stack.Screen name="Help" options={{ title: '帮助' }} component={Help} />
+        </Stack.Navigator>
+      </NavigationContainer>
+      </PersistGate>
+    </Provider>
   );
 }
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  /*
-   * To keep the template simple and small we're adding padding to prevent view
-   * from rendering under the System UI.
-   * For bigger apps the reccomendation is to use `react-native-safe-area-context`:
-   * https://github.com/AppAndFlow/react-native-safe-area-context
-   *
-   * You can read more about it here:
-   * https://github.com/react-native-community/discussions-and-proposals/discussions/827
-   */
-  const safePadding = '5%';
-
-  return (
-    <View style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        style={backgroundStyle}>
-        <View style={{paddingRight: safePadding}}>
-          <Header/>
-        </View>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            paddingHorizontal: safePadding,
-            paddingBottom: safePadding,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
-export default App;
