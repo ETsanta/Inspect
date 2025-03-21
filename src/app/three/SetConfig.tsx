@@ -26,18 +26,14 @@ let Pda = false;
 
 AsyncStorage.getItem('clear')
     .then(value => {
-        console.log("clear", value);
         Clear = (value == "1" ? true : false);
-        console.log("Clear", Clear);
     })
     .catch(error => {
         console.error('Error loading data:', error);
     });
 AsyncStorage.getItem('pda')
     .then(value => {
-        console.log("pda", value);
         Pda = (value == "1" ? true : false);
-        console.log("Pda", Pda);
     })
     .catch(error => {
         console.error('Error loading data:', error);
