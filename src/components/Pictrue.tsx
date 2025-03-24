@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Button, Image, Alert, Platform, PermissionsAndroid } from 'react-native';
+import { View, Button, Image, Alert, Platform, PermissionsAndroid, Text } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import axios from 'axios';
+import Modal from 'react-native-modal';
 
 const App = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -68,12 +69,12 @@ const App = () => {
 
     setUploading(true);
 
-    const formData = new FormData();
-    formData.append('file', {
-      uri: selectedImage.uri,
-      type: selectedImage.type || 'image/jpeg',
-      name: selectedImage.fileName || `photo_${Date.now()}.jpg`,
-    });
+    // const formData = new FormData();
+    // formData.append('file', {
+    //   uri: selectedImage.uri,
+    //   type: selectedImage.type || 'image/jpeg',
+    //   name: selectedImage.fileName || `photo_${Date.now()}.jpg`,
+    // });
 
     // try {
     //   const response = await axios.post('YOUR_UPLOAD_URL', formData, {
@@ -99,33 +100,36 @@ const App = () => {
   };
 
   return (
-    <View style={{  justifyContent: 'center', padding: 20 }}>
+
+    <View style={{ justifyContent: 'center', padding: 20 }}>
+      <Text>选择图片</Text>
       {selectedImage && (
         <Image
           source={{ uri: selectedImage.uri }}
           style={{ width: 300, height: 300, alignSelf: 'center', marginBottom: 20 }}
         />
       )}
-
-      <Button
-        title="图库"
-        onPress={() => handleImagePicker('library')}
-        disabled={uploading}
-      />
-
-      <View style={{ marginVertical: 10 }}>
+      <Modal>
         <Button
-          title="拍照"
-          onPress={() => handleImagePicker('camera')}
+          title="图库"
+          onPress={() => handleImagePicker('library')}
           disabled={uploading}
         />
-      </View>
 
-      <Button
-        title="上传"
-        onPress={uploadImage}
-        disabled={!selectedImage || uploading}
-      />
+        <View style={{ marginVertical: 10 }}>
+          <Button
+            title="拍照"
+            onPress={() => handleImagePicker('camera')}
+            disabled={uploading}
+          />
+        </View>
+
+        <Button
+          title="上传"
+          onPress={uploadImage}
+          disabled={!selectedImage || uploading}
+        />
+      </Modal>
     </View>
   );
 };
