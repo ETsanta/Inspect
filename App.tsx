@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { PersistGate } from 'redux-persist/integration/react'
 import { Provider } from 'react-redux'
+import { PortalProvider } from '@gorhom/portal';
 import { store, persistor } from './src/store/index'
 import SelfScreen from "./src/layouts/SelfScreen";
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
@@ -24,6 +25,7 @@ export default function App(): React.JSX.Element {
   return (
     <Provider store={store}>
       <PersistGate loading={<Window />} persistor={persistor}>
+      <PortalProvider>
       <NavigationContainer>
         <Stack.Navigator mode="modal">
           <Stack.Screen name="Home" options={{ title: '主体', headerShown: false }} component={BottomTabNavigator} />
@@ -39,6 +41,7 @@ export default function App(): React.JSX.Element {
           <Stack.Screen name="Help" options={{ title: '帮助' }} component={Help} />
         </Stack.Navigator>
       </NavigationContainer>
+      </PortalProvider>
       </PersistGate>
     </Provider>
   );

@@ -6,10 +6,9 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Check = () => {
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <View style={{ flex: 1, zIndex: 1 }}>
-                <Pictrue></Pictrue>
-                <Drawer></Drawer>
+        <GestureHandlerRootView>
+            <View>
+                <Pictrue height={150} width={150} ></Pictrue>
             </View>
         </GestureHandlerRootView>
     )

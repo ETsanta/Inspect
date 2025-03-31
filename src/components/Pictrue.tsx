@@ -4,14 +4,18 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import axios from 'axios';
 import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Portal } from '@gorhom/portal'
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+type Props = {
+  resizeMode?: 'cover' | 'contain' | 'stretch' | 'repeat' | 'center';
+  width?: number;
+  height?: number;
+};
 
-const App = () => {
+const App: React.FC<Props> = ({ width = 100, height = 100, resizeMode = 'cover' }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploading, setUploading] = useState(false);
-
-  // 请求必要权限
   const requestPermissions = async () => {
     if (Platform.OS === 'android') {
       try {
@@ -32,15 +36,12 @@ const App = () => {
     return true;
   };
 
-  // 处理图片选择
   const handleImagePicker = async (type: string) => {
     const hasPermission = await requestPermissions();
     if (!hasPermission) {
       Alert.alert('本应用暂未授予图库权限', '请在设置中赋予图库权限后再试');
       return;
     }
-
-    console.log("asdas");
     const options: any = {
       mediaType: 'photo',
       includeBase64: false,
@@ -52,21 +53,21 @@ const App = () => {
       const response: any = type === 'camera'
         ? await launchCamera(options)
         : await launchImageLibrary(options);
-      console.log("12312");
       if (response.didCancel) {
         console.log('User cancelled');
       } else if (response.errorCode) {
         console.log('Error: ', response.errorMessage);
       } else {
+        setIsVisible(false)
         const source = response.assets[0];
         setSelectedImage(source);
+        setIsPressed(false)
       }
     } catch (error) {
       console.log('Image picker error: ', error);
     }
   };
 
-  // 上传图片到服务器
   const uploadImage = async () => {
     if (!selectedImage) return;
 
@@ -102,30 +103,73 @@ const App = () => {
     // }
   };
   const [isVisible, setIsVisible] = useState(false);
-
+  const [isPressed, setIsPressed] = useState(false);
+  const [viewVisible, setViewVisible] = useState(false);
   return (
     <View>
       <View style={styles.container}>
         {!selectedImage && <TouchableOpacity
-          style={styles.pictrue}
+          style={[styles.pictrue, { width: width > 1 ? width : 1, height: height > 1 ? height : 1 }]}
           onPress={() => {
             setIsVisible(true)
           }}
         >
           <View>
-            <Icon name="insert-photo" size={50} color="#666" />
+            <Icon name="insert-photo" size={width > height ? height / 2 : width / 2} color="#666" />
           </View>
         </TouchableOpacity>}
         {selectedImage && (
-          <TouchableOpacity onPress={() => {
-            setIsVisible(true)
-          }}>
+          <TouchableOpacity
+            style={{ width: width, height: height }}
+            onLongPress={() => { setIsPressed(true) }}
+          >
             <Image
               source={{ uri: selectedImage.uri }}
-              style={{ width: 100, height: 100, marginBottom: 20 }}
+              style={{ width: width, height: height }}
+              resizeMode={resizeMode}
             />
+            {isPressed && <View style={styles.mask}>
+              <View style={styles.maskContent}>
+                <View style={styles.maskIcon}>
+                  setViewVisible
+                  <TouchableOpacity
+                    style={styles.maskContentIcon}
+                    onPress={() => {
+                      setViewVisible(true)
+                    }}
+                  >
+                    <Icon name="visibility" size={25} color="#fff" ></Icon>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.maskContentIcon}
+                    onPress={() => {
+                      setIsVisible(true)
+                    }}
+                  >
+                    <Icon name="build" size={25} color="#fff" ></Icon>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.maskIcon}>
+                  <TouchableOpacity
+                    style={styles.maskContentIcon}
+                    onPress={() => {
+                      setSelectedImage(null)
+                    }}
+                  >
+                    <Icon name="clear" size={25} color="#fff" ></Icon>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.maskContentIcon}
+                    onPress={() => {
+                      setIsPressed(false)
+                    }}
+                  >
+                    <Icon name="disabled-by-default" size={25} color="#fff" ></Icon>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>}
           </TouchableOpacity>
-
         )}
       </View>
       <Modal
@@ -165,13 +209,29 @@ const App = () => {
           </View>
         </View>
       </Modal>
+      {viewVisible && <Portal style={styles.maskContentIcon}>
+        <TouchableOpacity
+          style={styles.maskContentIcon}
+          onPress={() => {
+            setViewVisible(false)
+          }}
+        ></TouchableOpacity>
+        <Image
+          source={{ uri: selectedImage.uri }}
+          style={{ width: width, height: height }}
+        />
+      </Portal>}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  mask: {
+    ...StyleSheet.absoluteFillObject, // 覆盖整个容器
+    backgroundColor: 'rgba(0,0,0,0.8)',
+  },
   container: {
-    flexDirection: 'row', justifyContent: 'space-around'
+    margin: 5,
   },
   button: {
     padding: 15,
@@ -210,8 +270,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   pictrue: {
-    width: 100,
-    height: 100,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
@@ -220,6 +278,27 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderStyle: 'dashed',
     backgroundColor: '#e5e5e5'
+  },
+  maskContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  maskContentIcon: {
+    flex: 1,
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    height: "100%",
+    borderColor: '#fff',
+    justifyContent: "space-around",
+    alignItems: 'center',
+    flexDirection: "row",
+  },
+  maskIcon: {
+    flex: 1,
+    justifyContent: "space-around",
+    alignItems: 'center',
+    flexDirection: "row",
   }
 });
 
