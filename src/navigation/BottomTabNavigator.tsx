@@ -5,7 +5,7 @@ import SettingScreen from "../layouts/SettingScreen";
 import SelfScreen from "../layouts/SelfScreen";
 import { StyleSheet } from "react-native"
 import Icon from 'react-native-vector-icons/FontAwesome';
-import TodayTask from "../app/TodayTask/Check"
+import TodayTask from "../app/TodayTask/index"
 
 const Tab = createBottomTabNavigator();
 
@@ -51,7 +51,6 @@ export default function BottomTabNavigator() {
 }
 
 const styles = StyleSheet.create({
-
   tabBarIconStyle: {
     width: 30,
     height: 30,

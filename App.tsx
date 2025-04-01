@@ -17,7 +17,6 @@ import SetConfig from "./src/app/three/SetConfig";
 import About from "./src/app/three/About";
 import Help from "./src/app/three/Help";
 
-
 //初始化基础路由
 const Stack = createStackNavigator(); //基础路由
 

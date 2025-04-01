@@ -7,12 +7,12 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Progress from 'react-native-progress';
 
 
-function Check() {
+function customize() {
     return (
         <GestureHandlerRootView>
-            <Text>check</Text>
+            <Text>customize</Text>
         </GestureHandlerRootView>
     );
 }
 
-export default Check;
+export default customize;
