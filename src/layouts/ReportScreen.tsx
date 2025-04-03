@@ -34,23 +34,42 @@ export default function SecondScreen() {
             field: 'field6',
         }
     ]
+    const [productList, setProductList] = useState([])
+    const renderItem = ({ item, index }) => <TextInput key={index} label={item.titele} value={formData[item.field]} onChangeText={(text) => setFormData({ ...formData, [item.field]: text })} />;
     return (
-        
-        <View>
-            <ScrollView >
-                {
-                    fields.map((item, index) => {
-                        return <TextInput key={index} label={item.titele} value={formData[item.field]} onChangeText={(text) => setFormData({ ...formData, [item.field]: text })} />;
-                    })
-                }
-            </ScrollView>
+        <FlatList
+            style={styles.container}
+            contentContainerStyle={{
+                flexGrow: 1
+            }}
+            data={fields}
+            renderItem={renderItem}
+            ListFooterComponent={
+                <>
+                    <Button icon="camera" mode="contained" onPress={() => console.log('Pressed')}>
+                        提交
+                    </Button>
+                </>
+            }
+            ListEmptyComponent={<Text style={styles.emptyText}>没有数据</Text>} />
 
-            <Button icon="camera" mode="contained" onPress={() => console.log('Pressed')}>
-                提交
-            </Button>
-        </View>
     );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    container: {
+        padding: 10,
+    },
+
+    userTitle: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    emptyText: {
+        textAlign: 'center',
+        color: '#666',
+        marginTop: 40,
+        fontSize: 16
+    },
+});
 
