@@ -6,13 +6,14 @@ import Bubble from "./components/Bubble"
 import Check from './Check';
 import Maintain from './Maintain';
 import Customize from './Customize';
+import FAB from "./components/FAB"
 
 const Head = createMaterialTopTabNavigator();
 
 function checkIndex() {
     return (
         <View style={{ flex: 1 }}>
-            <Bubble />
+            <FAB />
             <Head.Navigator initialRouteName="Check">
                 <Head.Screen name="Check" options={{ title: '点检' }} component={Check} />
                 <Head.Screen name="Maintain" options={{ title: '维修' }} component={Maintain} />

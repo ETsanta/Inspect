@@ -5,7 +5,9 @@ import SettingScreen from "../layouts/SettingScreen";
 import SelfScreen from "../layouts/SelfScreen";
 import { StyleSheet } from "react-native"
 import Icon from 'react-native-vector-icons/FontAwesome';
-import TodayTask from "../app/TodayTask/index"
+import TodayTask from "../app/TodayTask/index";
+import ReportScreen from "../layouts/ReportScreen"
+import RecordScreen from "../layouts/RecordScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -22,20 +24,20 @@ export default function BottomTabNavigator() {
           <Icon name="check-square-o" size={size} color={color} />
         ),
       }} />
-      <Tab.Screen name="reportTask" component={SettingScreen} options={{
-        tabBarLabel: '汇报任务',
+      <Tab.Screen name="ReportScreen" component={ReportScreen} options={{
+        tabBarLabel: '汇报问题',
         headerShown: false,
-        title: "汇报任务",
+        title: "汇报问题",
         tabBarIcon: ({ color, size }) => (
-          <Icon name="road" size={size} color={color} />
+          <Icon name="window-maximize" size={size} color={color} />
         ),
       }} />
-      <Tab.Screen name="taskRecord" component={SettingScreen} options={{
+      <Tab.Screen name="RecordScreen" component={RecordScreen} options={{
         tabBarLabel: '任务记录',
         headerShown: false,
         title: "任务记录",
         tabBarIcon: ({ color, size }) => (
-          <Icon name="road" size={size} color={color} />
+          <Icon name="calendar" size={size} color={color} />
         ),
       }} />
       <Tab.Screen name="self" component={SelfScreen} options={{

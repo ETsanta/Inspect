@@ -38,8 +38,8 @@ const DraggableBubble = () => {
     const snapToEdge = (x: number, y: number) => {
         // 有效区域边界
         const boundaries = {
-            left: EDGE_MARGIN,
-            right: SCREEN_WIDTH - BUBBLE_SIZE - EDGE_MARGIN,
+            left: 0,
+            right: SCREEN_WIDTH - BUBBLE_SIZE ,
             top: EDGE_MARGIN + safeArea.top,
             bottom: safeArea.height + safeArea.top - BUBBLE_SIZE - EDGE_MARGIN,
         };
