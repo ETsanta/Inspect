@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import { List, Modal, TextInput, Dialog, Button } from 'react-native-paper';
+import { List, Modal, TextInput, Dialog, Button, Card, SegmentedButtons } from 'react-native-paper';
 import dayjs from 'dayjs';
 
 const YearSwitchableCalendar = () => {
@@ -20,8 +20,20 @@ const YearSwitchableCalendar = () => {
     };
 
     const TaskList = [
-        { title: 'Task 1', id: "1111" },
-        { title: 'Task 2', id: "2D电影" },
+        { title: '任务 1', id: "1111" },
+        { title: '任务 2', id: "2" },
+        { title: '任务 2', id: "23" },
+        { title: '任务 2', id: "24" },
+        { title: '任务 2', id: "25" },
+        { title: '任务 2', id: "26" },
+        { title: '任务 2', id: "27" },
+        { title: '任务 2', id: "28" },
+        { title: '任务 2', id: "29" },
+        { title: '任务 2', id: "30" },
+        { title: '任务 2', id: "31" },
+        { title: '任务 2', id: "32" },
+        { title: '任务 2', id: "33" },
+        { title: '任务 2', id: "34" }
     ]
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [formData, setFormData] = useState({
@@ -31,6 +43,33 @@ const YearSwitchableCalendar = () => {
         field4: '54',
         field5: '89',
     });
+    const [tapTitle, setTapTitle] = useState('1');
+    interface Field {
+        field: keyof typeof formData; // 限制为 formData 的键类型
+        title: string;
+    }
+    const fields: Field[] = [
+        {
+            field: "field1",
+            title: "字段1"
+        },
+        {
+            field: "field2",
+            title: "字段2"
+        },
+        {
+            field: "field3",
+            title: "字段3"
+        },
+        {
+            field: "field4",
+            title: "字段4"
+        },
+        {
+            field: "field5",
+            title: "字段5"
+        }
+    ]
     function openDetail(id: string) {
         setIsModalVisible(true);
     }
@@ -53,24 +92,42 @@ const YearSwitchableCalendar = () => {
                 firstDay={1}
                 key={currentDate.getFullYear()}
             />
-            {
-                TaskList.map((item, index) => (
-                    <List.Item title={item.title} key={item.id}
-                        onPress={() => openDetail(item.id)}
-                        left={props => <List.Icon {...props} icon="floor-plan" />}
-                        right={props => <List.Icon {...props} icon="chevron-right" />} />
-                ))
-            }
+            <SegmentedButtons style={{ flex: 0.1 }} value={tapTitle}
+                onValueChange={setTapTitle} buttons={[
+                    {
+                        value: '1',
+                        label: '点检',
+                    },
+                    {
+                        value: '2',
+                        label: '维修',
+                    },
+                    { value: '3', label: '自定义' },
+                ]}></SegmentedButtons>
+            <ScrollView style={{ flex: 0.3 }}>
+                {
+                    TaskList.map((item, index) => (
+                        <List.Item title={item.title} key={item.id}
+                            onPress={() => openDetail(item.id)}
+                            left={props => <List.Icon {...props} icon="floor-plan" />}
+                            right={props => <List.Icon {...props} icon="chevron-right" />} />
+                    ))
+                }
+            </ScrollView>
             <Dialog visible={isModalVisible} onDismiss={() => setIsModalVisible(false)} >
                 <Dialog.Title>任务信息</Dialog.Title>
                 <Dialog.ScrollArea>
                     <ScrollView style={{ height: 300 }}>
-                        <TextInput label="字段1" value={formData.field1} />
-                        <TextInput label="字段2" value={formData.field2} />
-                        <TextInput label="字段3" value={formData.field3} />
-                        <TextInput label="字段4" value={formData.field4} />
-                        <TextInput label="字段5" value={formData.field5} />
-                        <TextInput label="字段5" value={formData.field5} />
+                        {
+                            fields.map((item, index) => (
+                                <Card.Title
+                                    key={index}
+                                    title={item.title}
+                                    subtitle={formData[item.field]}
+                                />
+                            ))
+                        }
+
                     </ScrollView>
                 </Dialog.ScrollArea>
                 <Dialog.Actions>
@@ -86,10 +143,11 @@ const YearSwitchableCalendar = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
+        padding: 10,
         backgroundColor: '#fff'
     },
     yearSwitcher: {
+        flex: 0.1,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',

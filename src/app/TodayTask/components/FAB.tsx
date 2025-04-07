@@ -4,9 +4,7 @@ import { FAB, Portal, PaperProvider } from 'react-native-paper';
 
 const MyComponent = () => {
     const [state, setState] = React.useState({ open: false });
-
     const onStateChange = ({ open }) => setState({ open });
-
     const { open } = state;
 
     return (
@@ -14,7 +12,7 @@ const MyComponent = () => {
             style={styles.fabStyle}
             open={open}
             visible
-            icon={open ? 'calendar-today' : 'plus'}
+            icon={open ? 'unfold-less-horizontal' : 'unfold-more-horizontal'}
             actions={[
                 {
                     icon: 'qrcode-scan',
@@ -35,7 +33,6 @@ const MyComponent = () => {
             onStateChange={onStateChange}
             onPress={() => {
                 if (open) {
-                    // do something if the speed dial is open
                 }
             }}
         />
@@ -43,10 +40,8 @@ const MyComponent = () => {
 };
 const styles = StyleSheet.create({
     fabStyle: {
-        bottom: 16,
-        right: 16,
         position: 'absolute',
-        zIndex:999
+        zIndex: 1
     },
 });
 export default MyComponent;
