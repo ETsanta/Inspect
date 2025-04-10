@@ -92,7 +92,7 @@ const YearSwitchableCalendar = () => {
                 firstDay={1}
                 key={currentDate.getFullYear()}
             />
-            <SegmentedButtons style={{ flex: 0.1 }} value={tapTitle}
+            <SegmentedButtons style={{ flex: 0.1 }} value={tapTitle} density="high"
                 onValueChange={setTapTitle} buttons={[
                     {
                         value: '1',
@@ -102,9 +102,13 @@ const YearSwitchableCalendar = () => {
                         value: '2',
                         label: '维修',
                     },
-                    { value: '3', label: '自定义' },
+                    {
+                        value: '3',
+                        label: '自定义'
+                    },
                 ]}></SegmentedButtons>
-            <ScrollView style={{ flex: 0.3 }}>
+            <Text style={{ flex: 0.1, textAlign: 'center', fontSize: 14, fontWeight: 'bold' }}>{dayjs(currentDate).format('YYYY-MM-DD')}</Text>
+            <ScrollView style={{ flex: 0.2 }}>
                 {
                     TaskList.map((item, index) => (
                         <List.Item title={item.title} key={item.id}
@@ -138,8 +142,6 @@ const YearSwitchableCalendar = () => {
     );
 };
 
-
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -147,11 +149,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff'
     },
     yearSwitcher: {
-        flex: 0.1,
+        flex: 0.12,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 20
+        marginBottom: 5
     },
     switchButton: {
         fontSize: 18,

@@ -1,14 +1,22 @@
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Alert, View, SafeAreaView } from 'react-native';
 import { FAB, Portal, PaperProvider } from 'react-native-paper';
+import BarcodeScanner from "../../../components/Analyst"
 
-const MyComponent = () => {
+const MyComponent = ({scanResult}) => {
     const [state, setState] = React.useState({ open: false });
     const onStateChange = ({ open }) => setState({ open });
     const { open } = state;
-
+    const [isScanning, setIsScanning] = React.useState(false);
+    const handleScanResult = (result: any) => {
+        setIsScanning(false);
+        scanResult(result)
+    };
+    const onClose = () => {
+        setIsScanning(false);
+    };
     return (
-        <FAB.Group
+        (!isScanning && <FAB.Group
             style={styles.fabStyle}
             open={open}
             visible
@@ -17,7 +25,9 @@ const MyComponent = () => {
                 {
                     icon: 'qrcode-scan',
                     label: '扫码',
-                    onPress: () => console.log('Pressed star'),
+                    onPress: () => {
+                        setIsScanning(true);
+                    },
                 },
                 {
                     icon: 'email',
@@ -35,7 +45,8 @@ const MyComponent = () => {
                 if (open) {
                 }
             }}
-        />
+        />) ||
+        (<BarcodeScanner getScanResult={handleScanResult} isScanning={isScanning} onClose={onClose} />)
     );
 };
 const styles = StyleSheet.create({

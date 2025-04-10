@@ -92,6 +92,7 @@ const Unqualified = () => {
         <View style={{ flex: 1 }}>
             {isScanning ? (
                 <BarcodeScanner
+                    style={styles.container}
                     getScanResult={handleScanResult}
                 />
             ) : (

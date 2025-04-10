@@ -37,7 +37,7 @@ function customize() {
         <GestureHandlerRootView>
             <View style={{ display:'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 10 }}>
                 <Text>自定义任务进度：</Text>
-                <Progress.Bar width={260} useNativeDriver={true} progress={0.3}  />
+                <Progress.Bar useNativeDriver={true} progress={0.3}  />
             </View>
 
             <List.Section title="今日任务列表">
