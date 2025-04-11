@@ -85,7 +85,6 @@ export default function Config() {
     function setSave() {
         // dispatch(toClean({ 'clean': formData.clear }))
         // dispatch(toPda({ 'pda': formData.show }))
-        console.log("clean", formData.clear, formData.show);
         AsyncStorage.setItem('clear', formData.clear ? "1" : "0");
         AsyncStorage.setItem('pda', formData.show ? "1" : "0");
         Clear = formData.clear;

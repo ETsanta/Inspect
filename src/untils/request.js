@@ -41,7 +41,7 @@ class Request {
     const { method = 'GET', headers = {}, body, params } = options;
     // 处理 URL
     let fullURL = `${this.baseURL}${url}`;
-    console.log('1请求URL:', fullURL)
+    console.log('请求URL:', fullURL)
     if (params) {
       const queryString = new URLSearchParams(params).toString();
       fullURL += `?${queryString}`;
