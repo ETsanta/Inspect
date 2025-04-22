@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, NativeModules } from 'react-native';
 import { Camera, CameraType } from 'react-native-camera-kit';
 import DeviceInfo from 'react-native-device-info';
+import { Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const { FlashModule } = NativeModules;
 
-const App = ({ getScanResult }) => {
+const App = ({ getScanResult, isScanning, onClose }) => {
     const [isFlashOn, setIsFlashOn] = useState(false);
     const [hasFlash, setHasFlash] = useState(false);
     const [scanBarcode, setScanBarcode] = useState(true);
@@ -16,15 +17,15 @@ const App = ({ getScanResult }) => {
         checkFlashSupport();
     }, []);
 
+
+
     // 检查设备是否支持闪光灯
     const checkFlashSupport = async () => {
-        console.log("XXXXXXXXXXXX");
         const hasFlash = await FlashModule.hasFlash();
-        console.log("FlashlightManager",hasFlash);
-        
+
         if (hasFlash) {
             setHasFlash(true);
-        }else{
+        } else {
             setHasFlash(false);
         }
         // const model = await DeviceInfo.getModel();
@@ -41,7 +42,6 @@ const App = ({ getScanResult }) => {
         }
     };
     const crameRef = React.useRef(CameraType);
-
     // 处理扫码结果
     const onBarcodeScan = (event: any) => {
         const barcodeValue = event.nativeEvent.codeStringValue;
@@ -50,7 +50,12 @@ const App = ({ getScanResult }) => {
     };
 
     return (
-        <View style={styles.container}>
+        (isScanning && <View style={styles.container}>
+            <Button icon="camera-off" style={{ position: 'absolute', zIndex: 12, top: 20, right: 20 }}
+                textColor='#fff' buttonColor="#2e95d3" mode="elevated" onPress={
+                    onClose}>
+                关闭
+            </Button>
             <Camera
                 ref={crameRef}
                 style={styles.camera}
@@ -66,13 +71,15 @@ const App = ({ getScanResult }) => {
                     </Text>
                 </TouchableOpacity>
             )}
-        </View>
+        </View>)
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        zIndex: 10,
+        position: 'absolute', width: '100%', height: '100%'
     },
     camera: {
         flex: 1,

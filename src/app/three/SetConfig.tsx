@@ -26,18 +26,14 @@ let Pda = false;
 
 AsyncStorage.getItem('clear')
     .then(value => {
-        console.log("clear", value);
         Clear = (value == "1" ? true : false);
-        console.log("Clear", Clear);
     })
     .catch(error => {
         console.error('Error loading data:', error);
     });
 AsyncStorage.getItem('pda')
     .then(value => {
-        console.log("pda", value);
         Pda = (value == "1" ? true : false);
-        console.log("Pda", Pda);
     })
     .catch(error => {
         console.error('Error loading data:', error);
@@ -89,7 +85,6 @@ export default function Config() {
     function setSave() {
         // dispatch(toClean({ 'clean': formData.clear }))
         // dispatch(toPda({ 'pda': formData.show }))
-        console.log("clean", formData.clear, formData.show);
         AsyncStorage.setItem('clear', formData.clear ? "1" : "0");
         AsyncStorage.setItem('pda', formData.show ? "1" : "0");
         Clear = formData.clear;
