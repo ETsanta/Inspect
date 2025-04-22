@@ -1,16 +1,22 @@
 import React, { useState, useRef } from 'react';
 import { View, Image, StyleSheet, Modal, Text, Alert } from 'react-native';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createMaterialTopTabNavigator, MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
 import Check from './Check';
 import Maintain from './Maintain';
 import Customize from './Customize';
 import FAB from "./components/FAB"
 import { Dialog, Portal, PaperProvider, TextInput, Button } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { safeParse } from "../../untils/Handle"
+import { safeParse } from "../../untils/Handle";
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 
 const Head = createMaterialTopTabNavigator();
+type HeadNavigationProp = MaterialTopTabNavigationProp<{
+    check: { update?: any };
+    maintain: undefined;
+    customize: undefined;
+}>;
 function checkIndex({ navigation }: { navigation: any }) {
     function getResult(result: any) {
         const code = "673834A7EF917EE2CFB6AC35C61D7790645F3DB701A9A0ED0E289D7A252788A8"
@@ -50,15 +56,20 @@ function checkIndex({ navigation }: { navigation: any }) {
         },
         state: 1
     });
+    const [updateDate, setUpdate] = useState(0);
 
     const handleProblem = () => {
         setVisible(false)
-        AsyncStorage.getItem('clear')
+        AsyncStorage.getItem('localData')
             .then(value => {
-                let param = [...safeParse(value)]
-                param.push(TaskInfo)
-                AsyncStorage.setItem('localData', JSON.stringify(TaskInfo)).then(() => {
-                    navigation.navigate('localData', { task: TaskInfo })
+                const data = safeParse(value, [])
+                const IFLAG = data.findIndex((item: any, index: number) => {
+                    item.id == TaskInfo.id
+                })
+                IFLAG != -1 ? data[IFLAG] = TaskInfo : data.push(TaskInfo)
+                Alert.alert(IFLAG.tostring());
+                AsyncStorage.setItem('localData', JSON.stringify([])).then(() => {
+                    setUpdate(updateDate + 1)
                     setVisible(false);
                 }).catch(error => {
                     Alert.alert('任务本地化失败:', error);
@@ -67,22 +78,20 @@ function checkIndex({ navigation }: { navigation: any }) {
             .catch(error => {
                 let param = []
                 param.push(TaskInfo)
-                AsyncStorage.setItem('localData', JSON.stringify(TaskInfo)).then(() => {
-                    navigation.navigate('check', { task: TaskInfo })
+                AsyncStorage.setItem('localData', JSON.stringify(param)).then(() => {
+                    setUpdate(updateDate + 1)
                     setVisible(false);
                 }).catch(error => {
                     Alert.alert('任务本地化失败:', error);
                 })
             });
-        ;
     };
     const hideDialog = () => setVisible(false);
-
     return (
         <PaperProvider>
             <FAB scanResult={getResult} />
             <Head.Navigator initialRouteName="check">
-                <Head.Screen key="check" name="check" options={{ title: '点检' }} component={Check} />
+                <Head.Screen key="check" name="check" options={{ title: '点检' }} component={(props: any) => <Check {...props} appParam={updateDate} onUpdateParam={setUpdate} />} />
                 <Head.Screen key="maintain" name="maintain" options={{ title: '维修' }} component={Maintain} />
                 <Head.Screen key="customize" name="customize" options={{ title: '自定义' }} component={Customize} />
             </Head.Navigator>

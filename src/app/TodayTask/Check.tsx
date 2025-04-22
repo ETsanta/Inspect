@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Button, Image, Text } from 'react-native';
+import { View, Button, Image, Text, Alert } from 'react-native';
 import Pictrue from '../../components/Pictrue';
 import Drawer from "../../components/Drawer";
 import Message from '../../components/Message';
@@ -20,14 +20,16 @@ interface localData {
     },
     state: 0 | 1 // 0 未完成，1 已完成
 }
-function Check({ route }:{ route: any }) {
-
+function Check({ appParam, onUpdateParam }: { appParam: any, onUpdateParam: (paramValue: any) => void }) {
+    let [routeData, setRouteData] = useState();
     let [ListData, setListData] = React.useState<localData[]>([]);
+
     useEffect(() => {
-        if (route.params?.update) {
+        if (appParam) {
+            setRouteData(appParam);
             getDataForLocal();
         }
-    }, [route.params?.update]);
+    }, [appParam]);
 
     function getDataForLocal() {
         AsyncStorage.getItem('localData')
