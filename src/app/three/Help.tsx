@@ -1,21 +1,21 @@
 import { View } from 'react-native';
 import { Picker, DatePicker } from 'react-native-wheel-pick';
+import { Avatar, Button, Card, Text } from 'react-native-paper';
 
 // use Picker
 export default function CustomScrollPicker() {
 
+    const LeftContent = (props:any) => <Avatar.Icon {...props} icon="folder" />
     return (
         <View>
-            <Picker
-                style={{ backgroundColor: 'white', width: 300, height: 215 }}
-                selectedValue='item4'
-                pickerData={['item1', 'item2', 'item3', 'item4', 'item5', 'item6', 'item7']}
-                onValueChange={(value: any) => { console.log(value) }}
-            />
-            <DatePicker
-                style={{ backgroundColor: 'white', width: 370, height: 240 }}
-                onDateChange={(date: any) => { console.log(date) }}
-            />
+            <Card>
+                <Card.Content>
+                    <Text variant="titleLarge">帮助</Text>
+                    <Text variant="bodyMedium">如遇到问题请保持冷静，联系管理员</Text>
+                    <Text variant="bodyMedium">13640282804</Text>
+                </Card.Content>
+                <Card.Cover source={require('../../asset/img/help.jpg')} />
+            </Card>
         </View>
     );
 }
