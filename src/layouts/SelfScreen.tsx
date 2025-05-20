@@ -45,8 +45,8 @@ export default function HomeScreen({ navigation }) {
           <Vcolor>
             <View style={styles.userTitleContent}>
               <Avatar.Image size={64} source={require('../asset/img/user.png')} />
-              <Text style={styles.userName}>菠萝吹水</Text>
-              <Text style={styles.userPosition}>国宝三剑客</Text>
+              <Text style={styles.userName}>Tanzs</Text>
+              <Text style={styles.userPosition}>React-Native</Text>
             </View>
           </Vcolor>
         </View>
@@ -107,9 +107,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   userPosition: {
-    color: '#FFF',
+    color: '#919192',
     fontSize: 14,
-    color:'#cccccc',
   },
   userTitle: {
     height: 200,

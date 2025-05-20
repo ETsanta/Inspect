@@ -1,10 +1,10 @@
 import React, { useRef, useEffect } from 'react';
-import { Animated, StyleSheet, View, Easing, t  } from 'react-native';
+import { Animated, StyleSheet, View, Easing, ImageBackground } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 
-const MovingBackground = ({children}) => {
+const MovingBackground = ({ children }) => {
   const waveAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -25,39 +25,53 @@ const MovingBackground = ({children}) => {
   });
 
   return (
-    <View style={styles.container}>
-      <AnimatedGradient
-        colors={['rgba(34, 150, 243,1)', '#FFFFFF', 'rgba(34, 150, 243,1)']}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 1, y: 0.5 }}
-        style={[
-          styles.gradient,
-          {
-            transform: [{ translateX: whitePosition }]
-          }
-        ]}
-      />
-      {children}
-    </View>
+    <ImageBackground
+      source={require('../../asset/img/card.png')}
+      style={styles.container}
+      imageStyle={styles.background}
+    >
+      <View style={styles.container}>
+        <AnimatedGradient
+          colors={['rgba(198, 231, 248,0)', '#FFFFFF', 'rgba(198, 231, 248,0)']}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 1, y: 0.5 }}
+          style={[
+            styles.gradient,
+            {
+              transform: [{ translateX: whitePosition }]
+            }
+          ]}
+        />
+        {children}
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    borderRadius: 15,
+    marginBottom: 5,
+
+  },
   container: {
     flex: 1,
-    backgroundColor: '#2196F3', 
-    overflow: 'hidden',
-    width: '100%', 
+    // backgroundColor: '#2196F3',
+    width: '100%',
     height: '100%',
-    borderRadius: 5, 
-    marginBottom:5,
+    borderRadius: 15,          // 设置容器圆角
+    overflow: 'hidden',
+    marginBottom: 5,
   },
   gradient: {
     width: '200%', // 超出一倍宽度实现平滑过渡
     height: '100%',
     opacity: 0.5
   },
-  TitleSlot:{
+  TitleSlot: {
     position: 'absolute',
     top: 10,
     left: 10,

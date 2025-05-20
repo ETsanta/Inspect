@@ -10,7 +10,7 @@ const Window = () => {
         // 使用 <View> 组件作为容器，并应用样式 styles.container
         <View style={styles.container}>
             <Image style={styles.tinyLogo} source={require('../../asset/img/192.png')}></Image>
-            <Text>快播种</Text>
+            <Text>匆匆转运</Text>
         </View>
     );
 };
