@@ -1,42 +1,22 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, FlatList, Alert } from 'react-native';
 import { List, Button } from "react-native-paper"
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useSelector, useDispatch } from 'react-redux'
+import PDAInput, { PDAInputRef } from '../../components/Form';
+import { getShelvesInfoByCode, Qualified } from '../../api';
 
-// 可复用的表单项组件
-const FormRow: any = ({ label, value, onChangeText, onButtonPress, icon = 'center-focus-weak', showButton = true }) => {
-    const inputRef: any = useRef(null);
-    return (
-        <View style={styles.rowContainer}>
-            <Text style={styles.label}>{label}</Text>
-            <TextInput
-                ref={inputRef}
-                style={styles.input}
-                value={value}
-                onChangeText={onChangeText}
-                placeholder={`请输入${label}`}
-            />
-            {showButton && (
-                <TouchableOpacity onPress={() => {
-                    onButtonPress(); // 执行按钮逻辑
-                    // inputRef.current.focus(); // 聚焦输入框
-                }} style={styles.button}>
-                    <Icon name={icon} size={20} color="#666" />
-                </TouchableOpacity>
-            )}
-        </View>
-    );
-};
-const Qualified = () => {
-    const [shelveForm, setShelveForm] = useState({ workOrderCode: '1000050608', productCode: '200001506', productStatus: '3', materialCode: '3' }); // 初始化表单数据
-    const [formData, setFormData] = useState({
-        workStationCode: '',
-        shelvesCode: '',
-    });
 
-    const IzClean = useSelector(state => state.counter.set.clean)
-    const [productList, setProductList] = useState(['123', '234', '345'])
+const Qualifieds = () => {
+    const [shelveForm, setShelveForm] = useState({ workorderCode: '', loadItemCode: '', itemState: '', loadItemNumber: '' }); // 初始化表单数据
+    const workStationRef = useRef<PDAInputRef>(null);
+    const shelvesRef = useRef<PDAInputRef>(null);
+    const productRef = useRef<PDAInputRef>(null);
+
+    const menu = [
+        { label: "工位", placeholder: "扫描工位编码", feild: "workStation", Ref: workStationRef },
+        { label: "货架编码", placeholder: "扫描工单编号", feild: "workCode", Ref: shelvesRef },
+        { label: "产品编码", placeholder: "扫描货架编码", feild: "workCode", Ref: productRef }
+    ]
+    const [productList, setProductList]: any = useState([])
 
     const [AccordionFlag, setAccordionFlag] = useState(true);
     const confirmDelete = (item: any, index: any) => {
@@ -50,16 +30,13 @@ const Qualified = () => {
         );
     };
     const delProduct = (e, i) => {
-        setProductList(prevData => prevData.filter((item, index) => index !== i));
+        setProductList((prevData: any) => prevData.filter((item, index) => index !== i));
     }
     const renderItem = ({ item, index }) => (
         <View style={styles.itemContainer}>
-            {/* 主要内容区域 */}
             <View style={styles.content}>
                 <Text style={styles.itemText}>产品ID:<Text >{item}</Text></Text>
             </View>
-
-            {/* 右侧操作按钮 */}
             <TouchableOpacity
                 style={styles.actionButton}
                 onPress={() => confirmDelete(item, index)}
@@ -68,53 +45,94 @@ const Qualified = () => {
             </TouchableOpacity>
         </View>
     );
-    function productScreen() {
-        Alert.alert('扫码正在开发中。。。')
-    }
     function sumbitQualified() {
-        clean()
-    }
-    function clean() {
-        if (IzClean) {
-            setShelveForm({ workOrderCode: '', productCode: '', productStatus: '', materialCode: '' })
-            setFormData({
-                workStationCode: '',
-                shelvesCode: '',
-            })
+        const isWorkStation = workStationRef.current?.validate();
+        const isShelvese = shelvesRef.current?.validate();
+        const length = productList.length;
+        if (!isWorkStation || !isShelvese || !length) {
+            Alert.alert('错误', '请检查上传信息');
+            return;
+        }
+        let param = {
+            "workStationCode": workStationRef.current?.getValue(),
+            "shelvesCode": shelvesRef.current?.getValue(),
+            "loadItemCount": length,
+            "loadItemCode": shelveForm.loadItemCode,
+            "workorderCode": shelveForm.workorderCode,
+            "scanItemCount": length,
+            "scanProductCodes": productList,
+            "productState": 1
+        }
+        Qualified(param).then((data) => {
+            Alert.alert(data.msg);
+            workStationRef.current?.clear()
+            shelvesRef.current?.clear()
+            productRef.current?.clear()
+            setShelveForm({ workorderCode: '', loadItemCode: '', itemState: '', loadItemNumber: '' })
             setProductList([])
+        })
+
+    }
+    function addProduct(val: any) {
+        const result = productList.find((item) => {
+            return item == val
+        })
+        if (!result && val) {
+            setProductList([...productList, val])
         }
     }
+    function getShelvesInfo(val: any) {
+        if (!val) return;
+        let param = {
+            shelvesCode: val
+        }
+        console.log(val);
+
+        getShelvesInfoByCode(param).then((data) => {
+            console.log(data.data);
+            setShelveForm(data.data)
+        }).catch(() => {
+            shelvesRef.current?.clear();
+        })
+    }
+
     return (
         <FlatList
             style={styles.container}
             ListHeaderComponent={<>
-                <FormRow
-                    label="工位条码"
-                    value={formData.workStationCode}
-                    onChangeText={(text: string) => setFormData({ ...formData, workStationCode: text })}
-                    showButton={false}
+                <PDAInput
+                    ref={menu[0].Ref}
+                    label={menu[0].label}
+                    placeholder={menu[0].placeholder}
+                    required={true}
+                    errorMessage={menu[0].label + "不能为空"}
+                    containerStyle={{ marginBottom: 20 }}
                 />
-                <FormRow
-                    label="货架条码"
-                    value={formData.shelvesCode}
-                    onChangeText={(text: string) => setFormData({ ...formData, shelvesCode: text })}
-                    showButton={false}
+                <PDAInput
+                    ref={menu[1].Ref}
+                    label={menu[1].label}
+                    placeholder={menu[1].placeholder}
+                    required={true}
+                    errorMessage={menu[1].label + "不能为空"}
+                    containerStyle={{ marginBottom: 20 }}
+                    onChangeText={getShelvesInfo}
+                />
+                <PDAInput
+                    ref={menu[2].Ref}
+                    label={menu[2].label}
+                    placeholder={menu[2].placeholder}
+                    errorMessage={menu[2].label + "不能为空"}
+                    containerStyle={{ marginBottom: 20 }}
+                    onChangeText={addProduct}
                 />
                 <List.Section>
-                    <List.Accordion title="货架携带信息" expanded={AccordionFlag} onPress={() => setAccordionFlag(!AccordionFlag)}>
-                        <List.Item title="工单编码" description={shelveForm.workOrderCode} left={() => <List.Icon icon="clipboard-text" />} />
-                        <List.Item title="物料编码" description={shelveForm.productCode} left={() => <List.Icon icon="ballot" />} />
-                        <List.Item title="产品数量" description={shelveForm.materialCode} left={() => <List.Icon icon="counter" />} />
-                        <List.Item title="产品状态" description={shelveForm.productStatus == '1' ? '合格' : shelveForm.productStatus == '2' ? '不合格' : shelveForm.productStatus == '3' ? '待检测' : '记录异常'} left={() => <List.Icon icon="help-circle" />} />
+                    <List.Accordion title="货架信息" expanded={AccordionFlag} onPress={() => setAccordionFlag(!AccordionFlag)}>
+                        <List.Item title="工单编码" description={shelveForm.workorderCode} left={() => <List.Icon icon="clipboard-text" />} />
+                        <List.Item title="物料编码" description={shelveForm.loadItemCode} left={() => <List.Icon icon="ballot" />} />
+                        <List.Item title="产品数量" description={shelveForm.loadItemNumber} left={() => <List.Icon icon="counter" />} />
+                        <List.Item title="产品状态" description={shelveForm.itemState == '1' ? '合格' : shelveForm.itemState == '2' ? '不合格' : shelveForm.itemState == '3' ? '待检测' : '记录异常'} left={() => <List.Icon icon="help-circle" />} />
                     </List.Accordion>
                 </List.Section>
-                <FormRow
-                    label="产品列表"
-                    value={formData.shelvesCode}
-                    onChangeText={(text: string) => setFormData({ ...formData, shelvesCode: text })}
-                    icon="fit-screen"
-                    onButtonPress={productScreen}
-                />
             </>}
             data={productList}
             renderItem={renderItem}
@@ -202,4 +220,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Qualified;
+export default Qualifieds;

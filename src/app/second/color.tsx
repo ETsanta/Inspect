@@ -27,7 +27,7 @@ const MovingBackground = ({ children }) => {
   return (
     <ImageBackground
       source={require('../../asset/img/card.png')}
-      style={styles.container}
+      style={styles.bakStyle}
       imageStyle={styles.background}
     >
       <View style={styles.container}>
@@ -54,8 +54,14 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'cover',
     borderRadius: 15,
-    marginBottom: 5,
-
+  },
+  bakStyle: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    borderRadius: 15,          // 设置容器圆角
+    overflow: 'hidden',
+    marginBottom:5
   },
   container: {
     flex: 1,
@@ -64,7 +70,6 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 15,          // 设置容器圆角
     overflow: 'hidden',
-    marginBottom: 5,
   },
   gradient: {
     width: '200%', // 超出一倍宽度实现平滑过渡
