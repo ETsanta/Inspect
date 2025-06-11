@@ -95,9 +95,9 @@ android {
         }
         release {
             storeFile file('my-release-key.keystore')
-            storePassword 'root123'
+            storePassword '123456'
             keyAlias 'my-key-alias'
-            keyPassword 'root123'
+            keyPassword '123456'
         }
     }
     buildTypes {

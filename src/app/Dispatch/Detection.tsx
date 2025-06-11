@@ -31,6 +31,7 @@ const App = () => {
         }
         detection(param).then((res) => {
             console.log("接受信息：", res);
+            Alert.alert(res.msg);
         })
 
         workStationRef.current?.clear();

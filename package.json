@@ -12,6 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@expo/vector-icons": "^14.1.0",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@gorhom/bottom-sheet": "^5.1.2",
@@ -47,6 +48,7 @@
     "react-native-modal": "^14.0.0-rc.1",
     "react-native-pager-view": "^6.7.0",
     "react-native-paper": "^5.13.1",
+    "react-native-picker-select": "^9.3.1",
     "react-native-progress": "^5.0.1",
     "react-native-reanimated": "^3.17.2",
     "react-native-safe-area-context": "^5.2.0",
