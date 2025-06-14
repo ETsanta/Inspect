@@ -61,13 +61,15 @@ export default function Repairs() {
         Repair(param).then((res) => {
             console.log("接受信息：", res);
             Alert.alert(res.msg);
+
+            inputRefs.workStation.current?.clear();
+            inputRefs.shelvesCode.current?.clear();
+            inputRefs.product.current?.clear();
+            inputRefs.count.current?.clear();
+            setProductList([]);
         })
 
-        inputRefs.workStation.current?.clear();
-        inputRefs.shelvesCode.current?.clear();
-        inputRefs.product.current?.clear();
-        inputRefs.count.current?.clear();
-        setProductList([]);
+
     };
     function addCount(val: any) {
         const result = productList.find((item) => {

@@ -46,10 +46,10 @@ export default function Maintenances() {
         Maintenance(param).then((res) => {
             console.log("接受信息：", res);
             Alert.alert(res.msg);
-        })
 
-        inputRefs.workStation.current?.clear();
-        inputRefs.shelvesCode.current?.clear();
+            inputRefs.workStation.current?.clear();
+            inputRefs.shelvesCode.current?.clear();
+        })
     };
 
     return (

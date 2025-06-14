@@ -3,7 +3,7 @@ import { FlatList, View, Alert, StyleSheet, Button } from 'react-native';
 import { Text } from "react-native-paper"
 import PDAInput, { PDAInputRef } from "../../components/Form"
 import Dropdown, { DropdownRef, DropdownOption } from "../../components/CustomSelect"
-import { Shipment } from '../../api';
+import { Shipment, getOrderCodeByStation } from '../../api';
 
 
 export default function Shipments() {
@@ -11,16 +11,27 @@ export default function Shipments() {
         workStation: useRef<PDAInputRef>(null),
         workOrderCode: useRef<DropdownRef>(null)
     };
-    const cityOptions: DropdownOption[] = [
-        { label: '北京', value: 'bj' },
-        { label: '上海', value: 'sh' },
-    ];
+    const [Options, setOptions] = useState<DropdownOption[]>([])
     const menu = [
         { label: "出货工位", placeholder: "扫描出货工位", feild: "workStation", Ref: inputRefs.workStation },
         { label: "工单编码", placeholder: "扫描工单编码", feild: "workOrderCode", Ref: inputRefs.workOrderCode }
     ]
 
-    const [country, setCountry] = useState("");
+
+    function getOrder(val: any) {
+        if (val) {
+            const param = {
+                "workStationCode": val
+            }
+            getOrderCodeByStation(param).then((data) => {
+                const result = data.data
+                if (result) {
+                    setOptions(result.workOrderCodes.map((item: any) => ({ label: item, value: item })))
+                }
+
+            })
+        }
+    }
 
     const renderItem = ({ item, index }: { item: any, index: number }) => (
         (item.feild == "workStation" && (<PDAInput
@@ -29,22 +40,23 @@ export default function Shipments() {
             placeholder={item.placeholder}
             required={true}
             errorMessage={item.label + "不能为空"}
+            onChangeText={getOrder}
             containerStyle={{ marginBottom: 20 }} />))
         ||
         <View>
             <Text style={styles.label}>工单选择</Text>
             <Dropdown
                 ref={inputRefs.workOrderCode}
-                options={cityOptions}
-                placeholder="请选择国家"
+                options={Options}
+                placeholder="请选择工单"
                 required={true}
-                onSelect={(item) => console.log('选中国家:', item)}
+                onSelect={(item) => console.log('选中工单:', item)}
             />
         </View>
     )
 
     const handleSubmit = () => {
-        if (!cityOptions.length) {
+        if (!Options.length) {
             Alert.alert("未找到有效的工单列表，请尝试换个出货工位")
             return false
         };
@@ -56,7 +68,6 @@ export default function Shipments() {
             return;
         }
 
-        // 获取值
         const workStation = inputRefs.workStation.current?.getValue();
         const shelvesCode = inputRefs.workOrderCode.current?.getValue();
         const param = {
@@ -66,15 +77,15 @@ export default function Shipments() {
         Shipment(param).then((res) => {
             console.log("接受信息：", res);
             Alert.alert(res.msg);
+
+            setOptions([])
+            inputRefs.workStation.current?.clear();
+            inputRefs.workOrderCode.current?.reset();
         })
 
-        inputRefs.workStation.current?.clear();
-        inputRefs.workOrderCode.current?.clear();
     };
 
     return (
-
-
         <FlatList
             style={styles.container}
             data={menu}
@@ -85,7 +96,6 @@ export default function Shipments() {
                     <Button title="提交" onPress={handleSubmit} />
                 </View>
             } />
-
     )
 }
 

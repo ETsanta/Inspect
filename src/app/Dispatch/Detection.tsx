@@ -13,7 +13,6 @@ const App = () => {
     ]
 
     const handleSubmit = () => {
-        // 手动校验所有输入框
         const isWorkStation = workStationRef.current?.validate();
         const isWorkorderCode = workorderCodeRef.current?.validate();
 
@@ -32,10 +31,11 @@ const App = () => {
         detection(param).then((res) => {
             console.log("接受信息：", res);
             Alert.alert(res.msg);
+            
+            workStationRef.current?.clear();
+            workorderCodeRef.current?.clear();
         })
 
-        workStationRef.current?.clear();
-        workorderCodeRef.current?.clear();
     };
 
     const handleClearAll = () => {

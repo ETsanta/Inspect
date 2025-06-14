@@ -1,19 +1,20 @@
-import * as React from 'react';
+import React, { useRef } from 'react';
 import { FlatList, View, Alert, StyleSheet } from 'react-native';
 import { Text, Button } from "react-native-paper"
-import Form from "../../components/Form"
+import PDAInput, { PDAInputRef } from '../../components/Form';
+import { Outbound } from '../../api';
 
 
-export default function Outbound() {
+export default function Outbounds() {
     const [formData, setFormData]: any = React.useState({
         shelvesCode: ''
     });
     const inputRefs = {
-        shelvesCode: React.useRef(null)
+        shelvesCode: useRef<PDAInputRef>(null)
     };
 
     const menu = [
-        { label: "货架编码", placeholder: "扫描货架编码", feild: "shelvesCode" },
+        { label: "货架编码", placeholder: "扫描货架编码", feild: "shelvesCode", Ref: inputRefs.shelvesCode },
     ]
     const handleChange = (name: string, value: any) => {
         setFormData((prev: any) => ({
@@ -21,17 +22,40 @@ export default function Outbound() {
             [name]: value
         }));
     };
+
+    const handleSubmit = () => {
+        const isShelvesCode = inputRefs.shelvesCode.current?.validate();
+
+        if (!isShelvesCode) {
+            Alert.alert('错误', '请填写所有必填字段');
+            return;
+        }
+
+        // 获取值
+        const shelvesCode = inputRefs.shelvesCode.current?.getValue();
+        const param = {
+            "shelvesCode": shelvesCode,
+        }
+        Outbound(param).then((res) => {
+            console.log("接受信息：", res);
+            Alert.alert(res.msg);
+
+            inputRefs.shelvesCode.current?.clear();
+        })
+
+    };
     const renderItem = ({ item, index }: { item: any, index: number }) => (
-        <Form label={item.label}
-            value={formData[item.feild]}
-            onChangeText={(v: any) => handleChange(item.feild, v)}
+        <PDAInput
+            ref={item.Ref}
+            label={item.label}
             placeholder={item.placeholder}
-        ></Form>
+            required={true}
+            errorMessage={item.label + "不能为空"}
+            containerStyle={{ marginBottom: 20 }}
+        ></PDAInput>
     );
 
     return (
-
-
         <FlatList
             style={styles.container}
             data={menu}
@@ -43,7 +67,7 @@ export default function Outbound() {
                         style={styles.lastButton}
                         buttonColor="#f194ff"
                         textColor='white'
-                        onPress={() => Alert.alert('到此为止了。')}
+                        onPress={handleSubmit}
                     >确认</Button>
                 </View>
             } />
