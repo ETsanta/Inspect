@@ -21,10 +21,10 @@ export default function Repairs() {
     };
     const [productList, setProductList]: any = useState([])
     const menu = [
-        { label: "维修工位", placeholder: "扫描维修工位", feild: "workStation", Ref: inputRefs.workStation },
-        { label: "货架编码", placeholder: "扫描货架编码", feild: "shelvesCode", Ref: inputRefs.shelvesCode },
-        { label: "产品数量", placeholder: "请扫描产品", feild: "count", Ref: inputRefs.count },
-        { label: "扫入产品", placeholder: "扫入产品", feild: "product", Ref: inputRefs.product },
+        { label: "维修工位", placeholder: "扫描维修工位", field: "workStation", Ref: inputRefs.workStation },
+        { label: "货架编码", placeholder: "扫描货架编码", field: "shelvesCode", Ref: inputRefs.shelvesCode },
+        { label: "产品数量", placeholder: "请扫描产品", field: "count", Ref: inputRefs.count },
+        { label: "扫入产品", placeholder: "扫入产品", field: "product", Ref: inputRefs.product },
     ]
     const renderItem = ({ item, index }: { item: any, index: number }) => (
         <View key={item} style={styles.itemContainer}>
@@ -106,8 +106,8 @@ export default function Repairs() {
             renderItem={renderItem}
             ListHeaderComponent={
                 <>
-                    {menu.map((item: any, index: number) => (item.feild != "product" && <PDAInput
-                        key={item.feild}
+                    {menu.map((item: any, index: number) => (item.field != "product" && <PDAInput
+                        key={item.field}
                         ref={item.Ref}
                         label={item.label}
                         placeholder={item.placeholder}
@@ -117,7 +117,7 @@ export default function Repairs() {
                     />) ||
                         <PDAInput
                             ref={item.Ref}
-                            key={item.feild}
+                            key={item.field}
                             label={item.label}
                             placeholder={item.placeholder}
                             errorMessage={item.label + "不能为空"}

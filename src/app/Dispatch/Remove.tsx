@@ -1,36 +1,56 @@
-import * as React from 'react';
+import React, { useRef } from 'react';
 import { FlatList, View, Alert, StyleSheet } from 'react-native';
 import { Text, Button } from "react-native-paper"
-import Form from "../../components/Form"
+import PDAInput, { PDAInputRef } from '../../components/Form';
+import { Remove } from '../../api';
 
 
-export default function Remove() {
-    const [formData, setFormData]: any = React.useState({
-        workStation: '',
-        shelvesCode: ""
-    });
+export default function Removes() {
     const inputRefs = {
-        workStation: React.useRef(null),
-        shelvesCode: React.useRef(null)
+        workStationRef: useRef<PDAInputRef>(null),
+        shelvesCodeRef: useRef<PDAInputRef>(null)
     };
 
     const menu = [
-        { label: "返空点位", placeholder: "扫描返空点位", feild: "workStation" },
-        { label: "货架编码", placeholder: "扫描货架编码", feild: "shelvesCode" }
+        { label: "所在地码", placeholder: "扫描所在地码", field: "workStation", Ref: inputRefs.workStationRef },
+        { label: "货架编码", placeholder: "扫描货架编码", field: "shelvesCode", Ref: inputRefs.shelvesCodeRef }
     ]
-    const handleChange = (name: string, value: any) => {
-        setFormData((prev: any) => ({
-            ...prev,
-            [name]: value
-        }));
-    };
     const renderItem = ({ item, index }: { item: any, index: number }) => (
-        <Form label={item.label}
-            value={formData[item.feild]}
-            onChangeText={(v: any) => handleChange(item.feild, v)}
+        <PDAInput
+            ref={item.Ref}
+            label={item.label}
             placeholder={item.placeholder}
-        ></Form>
+            required={true}
+            errorMessage={item.label + "不能为空"}
+            containerStyle={{ marginBottom: 20 }}
+        ></PDAInput>
     );
+    const handleSubmit = () => {
+        const isShelvesCode = inputRefs.shelvesCodeRef.current?.validate();
+        const isWorkStation = inputRefs.workStationRef.current?.validate();
+
+        if (!isShelvesCode && !isWorkStation) {
+            Alert.alert('错误', '请填写所有必填字段');
+            return;
+        }
+
+        // 获取值
+        const shelvesCode = inputRefs.shelvesCodeRef.current?.getValue();
+        const workStation = inputRefs.workStationRef.current?.getValue();
+
+        const param = {
+            "shelvesCode": shelvesCode,
+            "workStationCode": workStation
+        }
+        Remove(param).then((res) => {
+            console.log("接受信息：", res);
+            Alert.alert(res.msg);
+
+            inputRefs.shelvesCodeRef.current?.clear();
+            inputRefs.workStationRef.current?.clear();
+        })
+
+    };
 
     return (
 
@@ -46,7 +66,7 @@ export default function Remove() {
                         style={styles.lastButton}
                         buttonColor="#f194ff"
                         textColor='white'
-                        onPress={() => Alert.alert('到此为止了。')}
+                        onPress={handleSubmit}
                     >确认</Button>
                 </View>
             } />

@@ -14,7 +14,7 @@ export default function Outbounds() {
     };
 
     const menu = [
-        { label: "货架编码", placeholder: "扫描货架编码", feild: "shelvesCode", Ref: inputRefs.shelvesCode },
+        { label: "货架编码", placeholder: "扫描货架编码", field: "shelvesCode", Ref: inputRefs.shelvesCode },
     ]
     const handleChange = (name: string, value: any) => {
         setFormData((prev: any) => ({

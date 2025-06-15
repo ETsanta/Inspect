@@ -37,7 +37,7 @@ const menuForm = [
     path: "Outbound"
   },
   {
-    name: "空货架转运",
+    name: "归还空货架",
     icon: "shelves",
     path: "Remove"
   },

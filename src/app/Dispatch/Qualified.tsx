@@ -12,9 +12,9 @@ const Qualifieds = () => {
     const productRef = useRef<PDAInputRef>(null);
 
     const menu = [
-        { label: "工位", placeholder: "扫描工位编码", feild: "workStation", Ref: workStationRef },
-        { label: "货架编码", placeholder: "扫描工单编号", feild: "workCode", Ref: shelvesRef },
-        { label: "产品编码", placeholder: "扫描货架编码", feild: "workCode", Ref: productRef }
+        { label: "工位", placeholder: "扫描工位编码", field: "workStation", Ref: workStationRef },
+        { label: "货架编码", placeholder: "扫描工单编号", field: "workCode", Ref: shelvesRef },
+        { label: "产品编码", placeholder: "扫描货架编码", field: "workCode", Ref: productRef }
     ]
     const [productList, setProductList]: any = useState([])
 

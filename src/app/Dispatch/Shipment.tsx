@@ -13,8 +13,8 @@ export default function Shipments() {
     };
     const [Options, setOptions] = useState<DropdownOption[]>([])
     const menu = [
-        { label: "出货工位", placeholder: "扫描出货工位", feild: "workStation", Ref: inputRefs.workStation },
-        { label: "工单编码", placeholder: "扫描工单编码", feild: "workOrderCode", Ref: inputRefs.workOrderCode }
+        { label: "出货工位", placeholder: "扫描出货工位", field: "workStation", Ref: inputRefs.workStation },
+        { label: "工单编码", placeholder: "扫描工单编码", field: "workOrderCode", Ref: inputRefs.workOrderCode }
     ]
 
 
@@ -34,7 +34,7 @@ export default function Shipments() {
     }
 
     const renderItem = ({ item, index }: { item: any, index: number }) => (
-        (item.feild == "workStation" && (<PDAInput
+        (item.field == "workStation" && (<PDAInput
             ref={item.Ref}
             label={item.label}
             placeholder={item.placeholder}

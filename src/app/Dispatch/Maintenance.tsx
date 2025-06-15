@@ -12,8 +12,8 @@ export default function Maintenances() {
     };
 
     const menu = [
-        { label: "工位", placeholder: "扫描工位编码", feild: "workStation", Ref: inputRefs.workStation },
-        { label: "货架编码", placeholder: "扫描货架编码", feild: "shelvesCode", Ref: inputRefs.shelvesCode }
+        { label: "工位", placeholder: "扫描工位编码", field: "workStation", Ref: inputRefs.workStation },
+        { label: "货架编码", placeholder: "扫描货架编码", field: "shelvesCode", Ref: inputRefs.shelvesCode }
     ]
 
     const renderItem = ({ item, index }: { item: any, index: number }) => (

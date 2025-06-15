@@ -8,8 +8,8 @@ const App = () => {
     const workorderCodeRef = useRef<PDAInputRef>(null);
 
     const menu = [
-        { label: "工位", placeholder: "扫描工位编码", feild: "workStation", Ref: workStationRef },
-        { label: "工单编号", placeholder: "扫描工单编号", feild: "workCode", Ref: workorderCodeRef }
+        { label: "工位", placeholder: "扫描工位编码", field: "workStation", Ref: workStationRef },
+        { label: "工单编号", placeholder: "扫描工单编号", field: "workCode", Ref: workorderCodeRef }
     ]
 
     const handleSubmit = () => {
