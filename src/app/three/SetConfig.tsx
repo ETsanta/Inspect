@@ -11,7 +11,6 @@ import { toPath, toClean, toPda } from "../../store/slices/setSlice";
 import { Button, Switch } from "react-native-paper";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 const FormRow: any = ({ children, label, onButtonPress, }) => {
     return (
         <View style={styles.rowContainer}>
