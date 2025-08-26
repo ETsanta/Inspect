@@ -1,31 +1,30 @@
 import * as React from 'react';
-import { View, Button, StyleSheet } from 'react-native';
-import { FlatGrid } from 'react-native-super-grid';
-import { Surface, Text, IconButton } from 'react-native-paper';
+import {View, Button, StyleSheet} from 'react-native';
+import {FlatGrid} from 'react-native-super-grid';
+import {Surface, Text, IconButton} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon5 from 'react-native-vector-icons/MaterialIcons';
 
-
 const menuForm = [
   {
-    name: "空货架返空",
-    icon: "devices",
-    path: "Remove"
+    name: '空货架返空',
+    icon: 'devices',
+    path: 'Remove',
   },
   {
-    name: "呼叫空货架",
-    icon: "devices",
-    path: "Replenish"
-  }
-]
+    name: '呼叫空货架',
+    icon: 'devices',
+    path: 'Replenish',
+  },
+];
 
-export default function SecondScreen({ navigation }) {
+export default function SecondScreen({navigation}: {navigation: any}) {
   return (
     <FlatGrid
       itemDimension={80}
       data={menuForm}
-      renderItem={({ item }) => (
-        <View style={{ alignItems: 'center' }}>
+      renderItem={({item}) => (
+        <View style={{alignItems: 'center'}}>
           <IconButton
             icon={props => <Icon5 name={item.icon} {...props} />}
             size={32}
@@ -46,12 +45,11 @@ const styles = StyleSheet.create({
     marginRight: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   body: {
     padding: 8,
     flexDirection: 'row',
-    flex: 1
+    flex: 1,
   },
 });
-

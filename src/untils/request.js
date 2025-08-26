@@ -1,139 +1,165 @@
-import Config from 'react-native-config'
+// utils/request.js
+import axios from 'axios';
+import {Platform} from 'react-native';
+import Config from 'react-native-config';
+import errorCode from './errorCode';
+import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {eventBus} from '../untils/login';
 
-class Request {
-  constructor(baseURL, timeout = 10000) {
-    this.baseURL = baseURL; // 基础 URL
-    this.timeout = timeout; // 超时时间
-    this.interceptors = {
-      request: [],
-      response: [],
-    };
-  }
-
-  // 添加请求拦截器
-  useRequestInterceptor(onFulfilled, onRejected) {
-    this.interceptors.request.push({ onFulfilled, onRejected });
-  }
-
-  // 添加响应拦截器
-  useResponseInterceptor(onFulfilled, onRejected) {
-    this.interceptors.response.push({ onFulfilled, onRejected });
-  }
-
-  // 执行拦截器
-  async runInterceptors(type, config) {
-    let result = config;
-    for (const interceptor of this.interceptors[type]) {
-      try {
-        result = await interceptor.onFulfilled(result);
-      } catch (error) {
-        if (interceptor.onRejected) {
-          interceptor.onRejected(error);
-        }
-        throw error;
-      }
-    }
-    return result;
-  }
-
-  // 发送请求
-  async request(url, options = {}) {
-    const { method = 'GET', headers = {}, body, params } = options;
-    // 处理 URL
-    let fullURL = `${this.baseURL}${url}`;
-    console.log('请求URL:', fullURL)
-    if (params) {
-      const queryString = new URLSearchParams(params).toString();
-      fullURL += `?${queryString}`;
-    }
-
-    // 请求配置
-    const config = {
-      method,
+class HttpClient {
+  constructor(baseURL) {
+    this.instance = axios.create({
+      baseURL: Config.API_URL + (Config.API_PORT ? Config.API_PORT : ''),
+      timeout: 10000,
       headers: {
         'Content-Type': 'application/json',
-        ...headers,
+        'X-Platform': Platform.OS,
       },
-      body: body ? JSON.stringify(body) : undefined,
-    };
+    });
 
-    try {
-      console.log('请求配置:', config)
-      // 执行请求拦截器
-      const requestConfig = await this.runInterceptors('request', config);
+    this.setupInterceptors();
+  }
 
-      // 超时处理
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('请求超时')), this.timeout
-        ));
+  setupInterceptors() {
+    // 请求拦截器
+    this.instance.interceptors.request.use(
+      config => {
+        console.log(`发送请求: ${config.method.toUpperCase()} ${config.url}`);
+        // 添加认证令牌
+        const token = this.getToken();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
 
-      // 发送请求
-      const response = await Promise.race([
-        fetch(fullURL, requestConfig),
-        timeoutPromise,
-      ]);
+        return config;
+      },
+      error => {
+        return Promise.reject(error);
+      },
+    );
 
-      // 检查响应状态
-      if (!response.ok) {
-        throw new Error(`请求失败: ${response.status}`);
+    // 响应拦截器
+    this.instance.interceptors.response.use(
+      response => {
+        console.log(response);
+        const code = response.data.code || 200;
+        // 获取错误信息
+        const msg =
+          errorCode[code] || response.data.msg || errorCode['default'];
+        if (
+          response.request.responseType === 'blob' ||
+          response.request.responseType === 'arraybuffer'
+        ) {
+          return response.data;
+        }
+        if (code == 401) {
+          Toast.show({
+            type: 'success',
+            text1: '登陆状态失效，请重新登陆',
+            position: 'bottom',
+            visibilityTime: 2000,
+          });
+          console.log(eventBus,"eventBus");
+
+          //TODO 处理登陆状态 和 清空token
+          eventBus.emit('UNAUTHORIZED', {
+            message: '未授权，请重新登录',
+          });
+
+          return Promise.reject('error');
+        } else if (code == 500) {
+          Toast.show({
+            type: 'error',
+            text1: msg,
+            position: 'bottom',
+            visibilityTime: 2000,
+          });
+          return Promise.reject(response.data);
+        } else if (code !== 200) {
+          Toast.show({
+            type: 'info',
+            text1: msg,
+            position: 'bottom',
+            visibilityTime: 2000,
+          });
+          return Promise.reject('error');
+        } else {
+          if (code === 200 && response.data.success) {
+            Toast.show({
+              type: 'success',
+              text1: response.data.msg,
+              position: 'bottom',
+              visibilityTime: 2000,
+            });
+          }
+          return response.data;
+        }
+      },
+      error => {
+        console.log(error);
+        
+        return Promise.reject(this.handleError(error));
+      },
+    );
+  }
+
+  getToken() {
+    return 'your-auth-token';
+  }
+
+  handleError(error) {
+    let errorMessage = '网络错误';
+
+    if (error.response) {
+      const {status, data} = error.response;
+
+      switch (status) {
+        case 401:
+          errorMessage = '未授权，请重新登录';
+          break;
+        case 403:
+          errorMessage = '拒绝访问';
+          break;
+        case 404:
+          errorMessage = '请求资源不存在';
+          break;
+        case 500:
+          errorMessage = '服务器内部错误';
+          break;
+        default:
+          errorMessage = data?.message || `连接错误${status}`;
       }
-
-      // 解析响应数据
-      const data = await response.json();
-
-      // 执行响应拦截器
-      return this.runInterceptors('response', data);
-    } catch (error) {
-      // 统一错误处理
-      console.error('请求错误:', error);
-      throw error;
+    } else if (error.request) {
+      errorMessage = '网络异常，请检查网络连接';
+    } else {
+      errorMessage = error.message;
     }
+
+    return new Error(errorMessage);
   }
 
-  // 封装常用方法
-  get(url, params) {
-    return this.request(url, { method: 'GET', params });
+  // 所有方法都返回标准的Promise
+  get(url, params = {}, config = {}) {
+    return this.instance.get(url, {...config, params});
   }
 
-  post(url, body, params) {
-    return this.request(url, { method: 'POST', body, params });
+  post(url, data = {}, config = {}) {
+    return this.instance.post(url, data, config);
   }
 
-  put(url, body) {
-    return this.request(url, { method: 'PUT', body });
+  put(url, data = {}, config = {}) {
+    return this.instance.put(url, data, config);
   }
 
-  delete(url, body) {
-    return this.request(url, { method: 'DELETE', body });
+  delete(url, params = {}, config = {}) {
+    return this.instance.delete(url, {...config, params});
+  }
+
+  patch(url, data = {}, config = {}) {
+    return this.instance.patch(url, data, config);
   }
 }
 
-console.log("Config", Config);
 // 创建默认实例
-const URL = Config.API_URL + (Config.API_PORT ? Config.API_PORT : "")
-const api = new Request(URL);
-
-// 添加请求拦截器（如添加 Token）
-api.useRequestInterceptor((config) => {
-  //   const token = localStorage.getItem('token');
-  const token = config.BASE_TOKEN ? config.BASE_TOKEN : "";
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// 添加响应拦截器（如统一处理错误）
-api.useResponseInterceptor(
-  (response) => response,
-  (error) => {
-    if (error.message === '请求超时') {
-      alert('请求超时，请重试');
-    } else {
-      alert('请求失败，请检查网络');
-    }
-    throw error;
-  }
-);
-
-export default api;
+export default new HttpClient();
